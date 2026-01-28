@@ -1,8 +1,7 @@
 'use client';
 
 import { useCalendar } from '@/app/_context/CalendarContext';
-import ViewSwitcher from '@/app/components/ViewSwitcher';
-import DayEvents from '@/app/day/_components/DayEvents';
+import DayEvents from '@/app/(calendar)/day/_components/DayEvents';
 import { getWeekCalendarDates, isTodayDate } from '@/lib/calendar';
 import { formatDateKey } from '@/lib/date';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
@@ -38,40 +37,26 @@ export default function WeekClient({ year, month, day }: PropsType) {
 
   return (
     <>
-      <ViewSwitcher
-        year={yearNumber}
-        month={monthNumber}
-        day={dayNumber}
-        active="week"
-      />
-      <div className="p-4">
-        <h1 className="mb-4 text-xl font-bold">
-          {yearNumber}年 {monthNumber}月 {dayNumber}日の週
-        </h1>
-        <div className="grid grid-cols-7 border-b text-center text-sm font-medium">
-          {dates.map((date) => {
-            return (
+      <div className="flex flex-col relative h-full min-h-0 overflow-y-auto">
+        <div className="sticky top-0 z-10 bg-white border-b">
+          <div className="grid grid-cols-[60px_repeat(7,1fr)] text-center text-sm font-medium">
+            <div />
+            {dates.map((date) => (
               <div key={date.toISOString()} className="py-2">
                 <div className="text-xs">
                   {['日', '月', '火', '水', '木', '金', '土'][date.getDay()]}
                 </div>
-
-                <div className="flex items-center justify-center gap-1">
-                  <Link
-                    href={`/day/${yearNumber}/${monthNumber}/${date.getDate()}`}
-                  >
-                    <div
-                      className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${
-                        isTodayDate(date) ? 'bg-blue-500 text-white' : ''
-                      }`}
-                    >
-                      {date.getDate()}
-                    </div>
-                  </Link>
-                </div>
+                <Link
+                  href={`/day/${yearNumber}/${monthNumber}/${date.getDate()}`}
+                  className={`mx-auto flex h-8 w-8 items-center justify-center rounded-full ${
+                    isTodayDate(date) ? 'bg-blue-500 text-white' : ''
+                  }`}
+                >
+                  {date.getDate()}
+                </Link>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-[60px_repeat(7,1fr)]">
@@ -92,7 +77,9 @@ export default function WeekClient({ year, month, day }: PropsType) {
               monthNumber,
               date.getDate()
             );
+
             const dayEvents = events.filter((event) => event.date === dateKey);
+
             const timeToMinutes = (time: string) => {
               const [h, m] = time.split(':').map(Number);
               return h * 60 + m;
@@ -100,58 +87,27 @@ export default function WeekClient({ year, month, day }: PropsType) {
 
             const MINUTE_HEIGHT = 64 / 60;
 
-            const positionedEvents = dayEvents.map((event) => {
-              const start = timeToMinutes(event.startTime);
-              const end = timeToMinutes(event.endTime);
-
-              const overlaps = dayEvents.filter((e) => {
-                const s = timeToMinutes(e.startTime);
-                const en = timeToMinutes(e.endTime);
-                return s < end && en > start;
-              });
-
-              return {
-                ...event,
-                start,
-                end,
-                overlapCount: overlaps.length,
-              };
-            });
-
             return (
               <div
                 key={date.toISOString()}
-                className="relative border-l border-gray-200 cursor-pointer hover:bg-blue-50"
-                onClick={() => {
-                  setSelectedDate(dateKey);
-
-                  setEditingEvent(null);
-                }}
+                className="relative border-l border-gray-200 hover:bg-blue-50"
               >
                 {hours.map((hour) => (
                   <div key={hour} className="h-16 border-b border-gray-200" />
                 ))}
 
-                {positionedEvents.map((event, index) => {
-                  const top = event.start * MINUTE_HEIGHT;
-                  const height = (event.end - event.start) * MINUTE_HEIGHT;
-                  const width = '100%';
-                  const left = '0%';
+                {dayEvents.map((event) => {
+                  const start = timeToMinutes(event.startTime);
+                  const end = timeToMinutes(event.endTime);
 
                   return (
                     <div
                       key={event.id}
                       className="absolute rounded bg-blue-500 p-1 text-xs text-white"
                       style={{
-                        top,
-                        height,
-                        width,
-                        left,
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingEvent(event);
-                        setSelectedDate(event.date);
+                        top: start * MINUTE_HEIGHT,
+                        height: (end - start) * MINUTE_HEIGHT,
+                        width: '100%',
                       }}
                     >
                       <div className="font-bold">{event.title}</div>

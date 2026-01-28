@@ -1,11 +1,8 @@
 'use client';
 import { useCalendar } from '@/app/_context/CalendarContext';
-import ViewSwitcher from '@/app/components/ViewSwitcher';
-import DayEvents from '@/app/day/_components/DayEvents';
+import DayEvents from '@/app/(calendar)/day/_components/DayEvents';
 import {
   getMonthCalendarDates,
-  getNextMonth,
-  getPrevMonth,
   isCurrentMonth,
   isTodayDate,
 } from '@/lib/calendar';
@@ -30,40 +27,14 @@ export default function MonthClient({ year, month }: PropsType) {
   const monthNumber = Number(month);
   const dates = getMonthCalendarDates(yearNumber, monthNumber);
 
-  const prev = getPrevMonth(yearNumber, monthNumber);
-  const next = getNextMonth(yearNumber, monthNumber);
-
   return (
     <>
-      <ViewSwitcher
-        year={yearNumber}
-        month={monthNumber}
-        day={1}
-        active="month"
-      />
       <div className="p-4">
-        <div className="mb-4 flex items-center justify-between">
-          <Link
-            href={`/month/${prev.year}/${prev.month}`}
-            className="rounded px-3 py-1 hover:bg-gray-100"
-          >
-            ←前月
-          </Link>
-
-          <h1 className="mb-4 text-xl font-bold ">
-            {yearNumber}年 {monthNumber}月
-          </h1>
-          <Link
-            href={`/month/${next.year}/${next.month}`}
-            className="rounded px-3 py-1 hover:bg-gray-100"
-          >
-            翌月→
-          </Link>
-        </div>
+        <div className="mb-4 flex items-center justify-between"></div>
 
         <div className="grid grid-cols-7 border-b text-center text-sm font-medium">
           {['日', '月', '火', '水', '木', '金', '土'].map((day) => (
-            <div key={day} className="py-2">
+            <div key={day} className="py-3">
               {day}
             </div>
           ))}
@@ -84,7 +55,7 @@ export default function MonthClient({ year, month }: PropsType) {
               <div
                 key={date.toISOString()}
                 className={`
-                h-24 border p-1
+                h-32 border p-1
                 ${isCurrent ? 'bg-white' : 'bg-gray-100 text-gray-400'}
                 hover:bg-blue-50
               `}

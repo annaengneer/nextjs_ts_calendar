@@ -6,8 +6,6 @@ import {
   addDays,
   isToday,
   isSameMonth,
-  addMonths,
-  subMonths,
 } from 'date-fns';
 
 export const getMonthCalendarDates = (year: number, month: number): Date[] => {
@@ -49,24 +47,4 @@ export const isCurrentMonth = (
 
 export const isTodayDate = (date: Date): boolean => {
   return isToday(date);
-};
-
-export const getPrevMonth = (year: number, month: number) => {
-  const date = new Date(year, month - 1);
-  const prev = subMonths(date, 1);
-
-  return {
-    year: prev.getFullYear(),
-    month: prev.getMonth() + 1,
-  };
-};
-
-export const getNextMonth = (year: number, month: number) => {
-  const date = new Date(year, month - 1);
-  const next = addMonths(date, 1);
-
-  return {
-    year: next.getFullYear(),
-    month: next.getMonth() + 1,
-  };
 };
