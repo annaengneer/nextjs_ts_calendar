@@ -11,6 +11,7 @@ type PropsType = {
 
 export default async function DayPage({ params }: PropsType) {
   const { year, month, day } = await params;
+
   const date = formatDateKey(Number(year), Number(month), Number(day));
 
   return <DayClient date={date} />;
