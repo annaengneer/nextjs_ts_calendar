@@ -19,6 +19,9 @@ export default function WeekClient({ year, month, day }: PropsType) {
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+  const [defaultStartTime, setDefaultStartTime] = useState<
+    string | undefined
+  >();
 
   const yearNumber = Number(year);
   const monthNumber = Number(month);
@@ -73,8 +76,8 @@ export default function WeekClient({ year, month, day }: PropsType) {
 
           {dates.map((date) => {
             const dateKey = formatDateKey(
-              yearNumber,
-              monthNumber,
+              date.getFullYear(),
+              date.getMonth() + 1,
               date.getDate()
             );
 
@@ -91,6 +94,22 @@ export default function WeekClient({ year, month, day }: PropsType) {
               <div
                 key={date.toISOString()}
                 className="relative border-l border-gray-200 hover:bg-blue-50"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const clickOffsetY = e.clientY - rect.top;
+                  const clickedMinutes = Math.floor(
+                    clickOffsetY / MINUTE_HEIGHT
+                  );
+                  const startHour = Math.floor(clickedMinutes / 60);
+
+                  setDefaultStartTime(
+                    `${String(startHour).padStart(2, '0')}:00`
+                  );
+                  setSelectedDate(
+                    formatDateKey(yearNumber, monthNumber, date.getDate())
+                  );
+                  setEditingEvent(null);
+                }}
               >
                 {hours.map((hour) => (
                   <div key={hour} className="h-16 border-b border-gray-200" />
@@ -103,6 +122,11 @@ export default function WeekClient({ year, month, day }: PropsType) {
                   return (
                     <div
                       key={event.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingEvent(event);
+                        setSelectedDate(event.date);
+                      }}
                       className="absolute rounded bg-blue-500 p-1 text-xs text-white"
                       style={{
                         top: start * MINUTE_HEIGHT,
@@ -128,6 +152,7 @@ export default function WeekClient({ year, month, day }: PropsType) {
           key={editingEvent?.id ?? selectedDate}
           date={selectedDate}
           editingEvent={editingEvent}
+          defaultStartTime={defaultStartTime}
           autoOpen
           onClose={() => {
             setSelectedDate(null);

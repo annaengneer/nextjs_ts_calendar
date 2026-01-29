@@ -1,11 +1,14 @@
 'use client';
 
 import MiniMonthCalendar from '@/lib/monthCalendar';
+import { useCalendar } from '../_context/CalendarContext';
 
 export default function Sidebar() {
+  const { openCreate } = useCalendar();
   return (
     <aside className="w-64 shrink-0 h-full bg-gray-50 px-4 py-5">
       <button
+        onClick={openCreate}
         className="
             mb-6 flex items-center gap-2
             rounded-full bg-blue-500 px-4 py-2

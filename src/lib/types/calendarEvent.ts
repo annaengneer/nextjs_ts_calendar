@@ -1,4 +1,3 @@
-// lib/types/calendar.ts
 export type CalendarEvent = {
   id: string;
   title: string;

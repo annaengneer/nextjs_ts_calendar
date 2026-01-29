@@ -32,3 +32,34 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const start = searchParams.get('start');
+    const end = searchParams.get('end');
+
+    const events = await prisma.event.findMany({
+      where:
+        start && end
+          ? {
+              date: {
+                gte: start,
+                lte: end,
+              },
+            }
+          : undefined,
+      orderBy: {
+        startTime: 'asc',
+      },
+    });
+
+    return NextResponse.json(events);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}

@@ -47,6 +47,9 @@ export default function DayClient({ date }: PropsType) {
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
   const today = new Date();
   const isToday = today.toISOString().slice(0, 10) === date;
+  const [defaultStartTime, setDefaultStartTime] = useState<
+    string | undefined
+  >();
 
   return (
     <>
@@ -73,36 +76,40 @@ export default function DayClient({ date }: PropsType) {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-[60px_1fr]">
-          <div>
-            {hours.map((hour) => (
-              <div key={hour} className="h-16 border-b text-xs text-gray-500">
+        <div
+          className="relative cursor-pointer"
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const clickOffsetY = e.clientY - rect.top;
+            const clickedMinutes = Math.floor(clickOffsetY / MINUTE_HEIGHT);
+            const startHour = Math.floor(clickedMinutes / 60);
+            setDefaultStartTime(`${String(startHour).padStart(2, '0')}:00`);
+            setEditingEvent(null);
+            setCreating(true);
+          }}
+        >
+          {hours.map((hour) => (
+            <div key={hour} className="relative flex h-16 items-center">
+              <div className="w-15 pr-2 text-right text-xs text-gray-500">
                 {hour}:00
               </div>
-            ))}
-          </div>
 
-          <div
-            className="relative cursor-pointer"
-            onClick={() => {
-              setEditingEvent(null);
-              setCreating(true);
-            }}
-          >
-            {hours.map((hour) => (
-              <div key={hour} className="h-16 border-b" />
-            ))}
+              <div className="relative flex-1">
+                <div className="absolute inset-x-0 top-0 border-t border-gray-100" />
+              </div>
+            </div>
+          ))}
 
-            {positionedEvents.map((event, index) => {
-              const top = event.start * MINUTE_HEIGHT;
-              const height = (event.end - event.start) * MINUTE_HEIGHT;
-              const width = 100 / event.overlapCount;
-              const left = width * index;
+          {positionedEvents.map((event, index) => {
+            const top = event.start * MINUTE_HEIGHT;
+            const height = (event.end - event.start) * MINUTE_HEIGHT;
+            const width = 100 / event.overlapCount;
+            const left = width * index;
 
-              return (
-                <div
-                  key={event.id}
-                  className="
+            return (
+              <div
+                key={event.id}
+                className="
                   absolute
                   z-10
                   overflow-hidden
@@ -114,27 +121,30 @@ export default function DayClient({ date }: PropsType) {
                     border
                 border-white
                 "
-                  style={{
-                    top,
-                    height,
-                    width: `${width}%`,
-                    left: `${left}%`,
-                  }}
-                  onClick={() => setEditingEvent(event)}
-                >
-                  <div className="font-bold">{event.title}</div>
-                  <div className="text-[10px]">
-                    {event.startTime} - {event.endTime}
-                  </div>
+                style={{
+                  top,
+                  height,
+                  width: `${width}%`,
+                  left: `${left}%`,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingEvent(event);
+                }}
+              >
+                <div className="font-bold">{event.title}</div>
+                <div className="text-[10px]">
+                  {event.startTime} - {event.endTime}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
         {(creating || editingEvent) && (
           <DayEvents
             date={date}
             editingEvent={editingEvent}
+            defaultStartTime={defaultStartTime}
             autoOpen
             onClose={() => {
               setEditingEvent(null);

@@ -42,20 +42,23 @@ export default function MonthClient({ year, month }: PropsType) {
         <div className="grid grid-cols-7">
           {dates.map((date) => {
             const dateKey = formatDateKey(
-              yearNumber,
-              monthNumber,
+              date.getFullYear(),
+              date.getMonth() + 1,
               date.getDate()
             );
-            const isCurrent = isCurrentMonth(date, yearNumber, monthNumber);
-            const isToday = isTodayDate(date);
 
-            const dayEvents = events.filter((event) => event.date === dateKey);
+            const isToday = isTodayDate(date);
+            const isCurrent = isCurrentMonth(date, yearNumber, monthNumber);
+
+            const dayEvents = events.filter(
+              (event) => event.date === dateKey && isCurrent
+            );
 
             return (
               <div
                 key={date.toISOString()}
                 className={`
-                h-32 border p-1
+                h-32 border p-1 border-gray-200
                 ${isCurrent ? 'bg-white' : 'bg-gray-100 text-gray-400'}
                 hover:bg-blue-50
               `}
