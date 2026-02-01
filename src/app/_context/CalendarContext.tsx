@@ -17,7 +17,6 @@ type CalendarContextType = {
 type ApiEvent = {
   id: string;
   title: string;
-  date: string;
   startTime: string;
   endTime: string;
   createdAt: string;
@@ -55,7 +54,6 @@ export const CalendarProvider = ({
       },
       body: JSON.stringify({
         title: event.title,
-        date: event.date,
         startTime: event.startTime.toISOString(),
         endTime: event.endTime.toISOString(),
       }),
@@ -84,7 +82,6 @@ export const CalendarProvider = ({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: event.title,
-        date: event.date,
         startTime: event.startTime.toISOString(),
         endTime: event.endTime.toISOString(),
       }),
