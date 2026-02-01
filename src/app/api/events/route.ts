@@ -1,11 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
-
-    const { title, date, startTime, endTime } = body;
+    const { title, date, startTime, endTime } = await request.json();
 
     if (!title || !date || !startTime || !endTime) {
       return NextResponse.json(

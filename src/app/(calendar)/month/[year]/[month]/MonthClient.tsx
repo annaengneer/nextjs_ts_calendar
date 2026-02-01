@@ -19,6 +19,7 @@ type PropsType = {
 
 export default function MonthClient({ year, month }: PropsType) {
   const { events } = useCalendar();
+  console.log('events:', events);
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
@@ -26,7 +27,7 @@ export default function MonthClient({ year, month }: PropsType) {
   const yearNumber = Number(year);
   const monthNumber = Number(month);
   const dates = getMonthCalendarDates(yearNumber, monthNumber);
-
+  console.log(dates.length);
   return (
     <>
       <div className="p-4">
@@ -101,11 +102,9 @@ export default function MonthClient({ year, month }: PropsType) {
       </div>
       {selectedDate && (
         <DayEvents
-          key={editingEvent?.id ?? selectedDate}
+          key={editingEvent ? editingEvent.id : 'new'}
           date={selectedDate}
           editingEvent={editingEvent}
-          showAddButton={false}
-          autoOpen
           onClose={() => {
             setSelectedDate(null);
             setEditingEvent(null);

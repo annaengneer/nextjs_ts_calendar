@@ -876,8 +876,8 @@ export namespace Prisma {
     id: string | null
     title: string | null
     date: string | null
-    startTime: string | null
-    endTime: string | null
+    startTime: Date | null
+    endTime: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -886,8 +886,8 @@ export namespace Prisma {
     id: string | null
     title: string | null
     date: string | null
-    startTime: string | null
-    endTime: string | null
+    startTime: Date | null
+    endTime: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1011,8 +1011,8 @@ export namespace Prisma {
     id: string
     title: string
     date: string
-    startTime: string
-    endTime: string
+    startTime: Date
+    endTime: Date
     createdAt: Date
     updatedAt: Date
     _count: EventCountAggregateOutputType | null
@@ -1083,8 +1083,8 @@ export namespace Prisma {
       id: string
       title: string
       date: string
-      startTime: string
-      endTime: string
+      startTime: Date
+      endTime: Date
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["event"]>
@@ -1513,8 +1513,8 @@ export namespace Prisma {
     readonly id: FieldRef<"Event", 'String'>
     readonly title: FieldRef<"Event", 'String'>
     readonly date: FieldRef<"Event", 'String'>
-    readonly startTime: FieldRef<"Event", 'String'>
-    readonly endTime: FieldRef<"Event", 'String'>
+    readonly startTime: FieldRef<"Event", 'DateTime'>
+    readonly endTime: FieldRef<"Event", 'DateTime'>
     readonly createdAt: FieldRef<"Event", 'DateTime'>
     readonly updatedAt: FieldRef<"Event", 'DateTime'>
   }
@@ -1983,8 +1983,8 @@ export namespace Prisma {
     id?: StringFilter<"Event"> | string
     title?: StringFilter<"Event"> | string
     date?: StringFilter<"Event"> | string
-    startTime?: StringFilter<"Event"> | string
-    endTime?: StringFilter<"Event"> | string
+    startTime?: DateTimeFilter<"Event"> | Date | string
+    endTime?: DateTimeFilter<"Event"> | Date | string
     createdAt?: DateTimeFilter<"Event"> | Date | string
     updatedAt?: DateTimeFilter<"Event"> | Date | string
   }
@@ -2006,8 +2006,8 @@ export namespace Prisma {
     NOT?: EventWhereInput | EventWhereInput[]
     title?: StringFilter<"Event"> | string
     date?: StringFilter<"Event"> | string
-    startTime?: StringFilter<"Event"> | string
-    endTime?: StringFilter<"Event"> | string
+    startTime?: DateTimeFilter<"Event"> | Date | string
+    endTime?: DateTimeFilter<"Event"> | Date | string
     createdAt?: DateTimeFilter<"Event"> | Date | string
     updatedAt?: DateTimeFilter<"Event"> | Date | string
   }, "id">
@@ -2032,8 +2032,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Event"> | string
     title?: StringWithAggregatesFilter<"Event"> | string
     date?: StringWithAggregatesFilter<"Event"> | string
-    startTime?: StringWithAggregatesFilter<"Event"> | string
-    endTime?: StringWithAggregatesFilter<"Event"> | string
+    startTime?: DateTimeWithAggregatesFilter<"Event"> | Date | string
+    endTime?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Event"> | Date | string
   }
@@ -2042,8 +2042,8 @@ export namespace Prisma {
     id?: string
     title: string
     date: string
-    startTime: string
-    endTime: string
+    startTime: Date | string
+    endTime: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2052,8 +2052,8 @@ export namespace Prisma {
     id?: string
     title: string
     date: string
-    startTime: string
-    endTime: string
+    startTime: Date | string
+    endTime: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2062,8 +2062,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
-    startTime?: StringFieldUpdateOperationsInput | string
-    endTime?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2072,8 +2072,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
-    startTime?: StringFieldUpdateOperationsInput | string
-    endTime?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2082,8 +2082,8 @@ export namespace Prisma {
     id?: string
     title: string
     date: string
-    startTime: string
-    endTime: string
+    startTime: Date | string
+    endTime: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2092,8 +2092,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
-    startTime?: StringFieldUpdateOperationsInput | string
-    endTime?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2102,8 +2102,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
-    startTime?: StringFieldUpdateOperationsInput | string
-    endTime?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

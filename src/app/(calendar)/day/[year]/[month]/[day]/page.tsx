@@ -1,18 +1,21 @@
-import { formatDateKey } from '@/lib/date';
 import DayClient from './DayClient';
+import { getEventsByDate } from '@/lib/events';
+import { CalendarProvider } from '@/app/_context/CalendarContext';
 
-type PropsType = {
-  params: {
-    year: string;
-    month: string;
-    day: string;
-  };
-};
-
-export default async function DayPage({ params }: PropsType) {
+export default async function DayPage({
+  params,
+}: {
+  params: Promise<{ year: string; month: string; day: string }>;
+}) {
   const { year, month, day } = await params;
 
-  const date = formatDateKey(Number(year), Number(month), Number(day));
+  const date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 
-  return <DayClient date={date} />;
+  const events = await getEventsByDate(date);
+
+  return (
+    <CalendarProvider initialEvents={events}>
+      <DayClient date={date} />
+    </CalendarProvider>
+  );
 }

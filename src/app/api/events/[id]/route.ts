@@ -1,43 +1,33 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-type PropsType = {
-  params: Promise<{ id: string }>;
-};
+export async function PUT(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
+  const body = await req.json();
 
-export async function PUT(request: Request, { params }: PropsType) {
-  try {
-    const { id } = await params;
-    const { title, date, startTime, endTime } = await request.json();
+  const updated = await prisma.event.update({
+    where: { id },
+    data: {
+      title: body.title,
+      date: body.date,
+      startTime: new Date(body.startTime),
+      endTime: new Date(body.endTime),
+    },
+  });
 
-    const event = await prisma.event.update({
-      where: { id },
-      data: { title, date, startTime, endTime },
-    });
-
-    return NextResponse.json(event);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: 'イベント更新に失敗しました' },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(updated);
 }
 
-export async function DELETE(_: Request, { params }: PropsType) {
-  try {
-    const { id } = await params;
-    await prisma.event.delete({
-      where: { id },
-    });
+export async function DELETE(
+  _: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: 'イベント削除に失敗しました' },
-      { status: 500 }
-    );
-  }
+  await prisma.event.delete({ where: { id } });
+
+  return NextResponse.json({ success: true });
 }
