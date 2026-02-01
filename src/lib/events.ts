@@ -2,9 +2,14 @@ import { prisma } from '@/lib/prisma';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
 
 export async function getEventsByDate(date: string): Promise<CalendarEvent[]> {
+  const start = new Date(`${date}T00:00:00`);
+  const end = new Date(`${date}T24:00:00`);
   return prisma.event.findMany({
     where: {
-      date: date,
+      startTime: {
+        gte: start,
+        lt: end,
+      },
     },
     orderBy: {
       startTime: 'asc',
@@ -40,10 +45,10 @@ export async function getEventsByWeek(
   const base = new Date(year, month - 1, day);
 
   const start = new Date(base);
-  start.setDate(base.getDate() - base.getDay()); // 日曜
+  start.setDate(base.getDate() - base.getDay());
 
   const end = new Date(start);
-  end.setDate(start.getDate() + 7); // 次の日曜
+  end.setDate(start.getDate() + 7);
 
   return prisma.event.findMany({
     where: {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCalendar } from '@/app/_context/CalendarContext';
+import { formatDateKey } from '@/lib/date';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
 import { useRouter } from 'next/navigation';
 
@@ -9,6 +10,7 @@ type Props = {
   date: string;
   editingEvent?: CalendarEvent | null;
   defaultStartTime?: string;
+  allowDateEdit?: boolean;
   onClose?: () => void;
 };
 
@@ -24,13 +26,22 @@ export default function DayEvents({
   date,
   editingEvent,
   defaultStartTime,
+  allowDateEdit = false,
   onClose,
 }: Props) {
   const router = useRouter();
   const { addEvent, updateEvent, deleteEvent } = useCalendar();
 
   const [title, setTitle] = useState(editingEvent?.title ?? '');
-  const [eventDate, setEventDate] = useState(editingEvent?.date ?? date);
+  const [eventDate, setEventDate] = useState(
+    editingEvent?.startTime
+      ? formatDateKey(
+          editingEvent.startTime.getFullYear(),
+          editingEvent.startTime.getMonth() + 1,
+          editingEvent.startTime.getDate()
+        )
+      : date ?? new Date().toLocaleDateString('sv-SE')
+  );
   const [startTime, setStartTime] = useState(
     editingEvent ? toTime(editingEvent.startTime) : defaultStartTime ?? '09:00'
   );
@@ -64,7 +75,6 @@ export default function DayEvents({
       await updateEvent({
         ...editingEvent,
         title,
-        date: eventDate,
         startTime: startISO,
         endTime: endISO,
       });
@@ -103,12 +113,14 @@ export default function DayEvents({
           placeholder="予定タイトル"
           className="mb-3 w-full rounded-lg border px-3 py-2 text-sm"
         />
-
         <input
           type="date"
           value={eventDate}
+          disabled={!allowDateEdit}
           onChange={(e) => setEventDate(e.target.value)}
-          className="mb-4 w-full rounded-lg border px-3 py-2 text-sm"
+          className={`mb-4 w-full rounded-lg border px-3 py-2 text-sm
+          ${!allowDateEdit ? 'bg-gray-100 text-gray-500' : ''}
+        `}
         />
 
         <div className="mb-4 flex items-center gap-2">

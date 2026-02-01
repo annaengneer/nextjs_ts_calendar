@@ -27,7 +27,12 @@ export default function MonthClient({ year, month }: PropsType) {
   const yearNumber = Number(year);
   const monthNumber = Number(month);
   const dates = getMonthCalendarDates(yearNumber, monthNumber);
-  console.log(dates.length);
+  const eventDateKey = (event: CalendarEvent) =>
+    formatDateKey(
+      event.startTime.getFullYear(),
+      event.startTime.getMonth() + 1,
+      event.startTime.getDate()
+    );
   return (
     <>
       <div className="p-4">
@@ -52,7 +57,7 @@ export default function MonthClient({ year, month }: PropsType) {
             const isCurrent = isCurrentMonth(date, yearNumber, monthNumber);
 
             const dayEvents = events.filter(
-              (event) => event.date === dateKey && isCurrent
+              (event) => eventDateKey(event) === dateKey && isCurrent
             );
 
             return (
@@ -89,7 +94,7 @@ export default function MonthClient({ year, month }: PropsType) {
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditingEvent(event);
-                      setSelectedDate(event.date);
+                      setSelectedDate(eventDateKey(event));
                     }}
                   >
                     {event.title}

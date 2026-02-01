@@ -42,10 +42,13 @@ export default function WeekClient({ year, month, day }: PropsType) {
   const dates = getWeekCalendarDates(yearNumber, monthNumber, dayNumber);
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  const eventDateKey = (e: CalendarEvent) => {
-    const d = new Date(e.date);
-    return formatDateKey(d.getFullYear(), d.getMonth() + 1, d.getDate());
-  };
+  const eventDateKey = (e: CalendarEvent) =>
+    formatDateKey(
+      e.startTime.getFullYear(),
+      e.startTime.getMonth() + 1,
+      e.startTime.getDate()
+    );
+
   const minutesFromDate = (t: Date, isEnd = false) => {
     const h = t.getHours();
     const m = t.getMinutes();
@@ -186,6 +189,7 @@ export default function WeekClient({ year, month, day }: PropsType) {
           date={selectedDate}
           editingEvent={editingEvent}
           defaultStartTime={defaultStartTime}
+          allowDateEdit
           onClose={() => {
             setSelectedDate(null);
             setEditingEvent(null);

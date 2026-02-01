@@ -12,7 +12,6 @@ export async function PUT(
     where: { id },
     data: {
       title: body.title,
-      date: body.date,
       startTime: new Date(body.startTime),
       endTime: new Date(body.endTime),
     },

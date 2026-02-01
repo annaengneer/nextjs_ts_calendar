@@ -4,18 +4,27 @@ import DayEvents from '@/app/(calendar)/day/_components/DayEvents';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
 import { useState } from 'react';
 import { useCalendar } from '@/app/_context/CalendarContext';
+import { formatDateKey } from '@/lib/date';
+
 type PropsType = {
   date: string;
 };
 
+const hours = Array.from({ length: 24 }, (_, i) => i);
+const HOUR_HEIGHT = 48;
+const MINUTE_HEIGHT = HOUR_HEIGHT / 60;
+
 export default function DayClient({ date }: PropsType) {
   const { events } = useCalendar();
 
-  const dayEvents = events.filter((e) => e.date === date);
-
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const HOUR_HEIGHT = 48;
-  const MINUTE_HEIGHT = HOUR_HEIGHT / 60;
+  const dayEvents = events.filter((e) => {
+    const eventDateKey = formatDateKey(
+      e.startTime.getFullYear(),
+      e.startTime.getMonth() + 1,
+      e.startTime.getDate()
+    );
+    return eventDateKey === date;
+  });
 
   const minutesFromDate = (d: Date) => d.getHours() * 60 + d.getMinutes();
 
@@ -74,7 +83,6 @@ export default function DayClient({ date }: PropsType) {
         </div>
       </div>
 
-      {/* 時間グリッド */}
       <div className="flex-1 overflow-y-auto">
         <div className="relative flex">
           <div className="sticky top-0 left-0 z-20 w-15 bg-white">
@@ -151,6 +159,7 @@ export default function DayClient({ date }: PropsType) {
           date={date}
           editingEvent={editingEvent}
           defaultStartTime={defaultStartTime}
+          allowDateEdit
           onClose={handleClose}
         />
       )}

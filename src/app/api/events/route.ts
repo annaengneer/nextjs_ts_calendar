@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const event = await prisma.event.create({
       data: {
         title,
-        date,
+
         startTime,
         endTime,
       },
@@ -41,9 +41,9 @@ export async function GET(req: Request) {
       where:
         start && end
           ? {
-              date: {
-                gte: start,
-                lte: end,
+              startTime: {
+                gte: new Date(start),
+                lt: new Date(end),
               },
             }
           : undefined,
