@@ -25,9 +25,7 @@ export default function CalendarLayout({
           <div className="flex h-full flex-col rounded-xl bg-white  overflow-hidden">
             <main className="flex-1 overflow-y-auto p-4">{children}</main>
 
-            {isCreateOpen && (
-              <DayEvents date={today} autoOpen onClose={closeCreate} />
-            )}
+            {isCreateOpen && <DayEvents date={today} onClose={closeCreate} />}
           </div>
         </div>
       </div>
