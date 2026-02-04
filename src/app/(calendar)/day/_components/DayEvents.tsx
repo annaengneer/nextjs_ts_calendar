@@ -9,7 +9,7 @@ import { useState } from 'react';
 type Props = {
   date: string;
   editingEvent?: CalendarEvent | null;
-  defaultStartTime?: string;
+  defaultStartTime?: string | null;
   allowDateEdit?: boolean;
   onClose?: () => void;
 };

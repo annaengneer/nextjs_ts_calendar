@@ -1,21 +1,31 @@
 import DayClient from './DayClient';
-import { getEventsByDate } from '@/lib/events';
+import { getEventsByDate } from '@/lib/repositories/event/event.repository';
 import { CalendarProvider } from '@/app/_context/CalendarContext';
 
-export default async function DayPage({
-  params,
-}: {
-  params: Promise<{ year: string; month: string; day: string }>;
-}) {
+type Props = {
+  params: Promise<{
+    year: string;
+    month: string;
+    day: string;
+  }>;
+};
+
+export default async function DayPage({ params }: Props) {
   const { year, month, day } = await params;
 
-  const date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  const yearNum = Number(year);
+  const monthNum = Number(month);
+  const dayNum = Number(day);
 
-  const events = await getEventsByDate(date);
+  if (Number.isNaN(yearNum) || Number.isNaN(monthNum) || Number.isNaN(dayNum)) {
+    return <div>Invalid date</div>;
+  }
+
+  const events = await getEventsByDate(yearNum, monthNum, dayNum);
 
   return (
     <CalendarProvider initialEvents={events}>
-      <DayClient date={date} />
+      <DayClient year={yearNum} month={monthNum} day={dayNum} />
     </CalendarProvider>
   );
 }

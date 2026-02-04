@@ -1,6 +1,6 @@
 'use client';
 
-import MiniMonthCalendar from '@/lib/monthCalendar';
+import MiniMonthCalendar from '@/app/components/monthCalendar';
 import { useCalendar } from '../_context/CalendarContext';
 
 export default function Sidebar() {

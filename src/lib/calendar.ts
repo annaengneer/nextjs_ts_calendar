@@ -6,24 +6,16 @@ import {
   addDays,
   isToday,
   isSameMonth,
+  eachDayOfInterval,
 } from 'date-fns';
 
 export const getMonthCalendarDates = (year: number, month: number): Date[] => {
-  const firstDayOfMonth = startOfMonth(new Date(year, month - 1));
-  const lastDayOfMonth = endOfMonth(firstDayOfMonth);
+  const baseDate = new Date(year, month - 1);
 
-  const startDate = startOfWeek(firstDayOfMonth, { weekStartsOn: 0 });
-  const endDate = endOfWeek(lastDayOfMonth, { weekStartsOn: 0 });
-
-  const dates: Date[] = [];
-  let currentDate = startDate;
-
-  while (currentDate <= endDate) {
-    dates.push(currentDate);
-    currentDate = addDays(currentDate, 1);
-  }
-
-  return dates;
+  return eachDayOfInterval({
+    start: startOfWeek(startOfMonth(baseDate), { weekStartsOn: 0 }),
+    end: endOfWeek(endOfMonth(baseDate), { weekStartsOn: 0 }),
+  });
 };
 
 export const getWeekCalendarDates = (
@@ -32,9 +24,11 @@ export const getWeekCalendarDates = (
   day: number
 ): Date[] => {
   const baseDate = new Date(year, month - 1, day);
-  const startDate = startOfWeek(baseDate, { weekStartsOn: 0 });
 
-  return Array.from({ length: 7 }, (_, i) => addDays(startDate, i));
+  return eachDayOfInterval({
+    start: startOfWeek(baseDate, { weekStartsOn: 0 }),
+    end: endOfWeek(baseDate, { weekStartsOn: 0 }),
+  });
 };
 
 export const isCurrentMonth = (

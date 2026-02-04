@@ -19,9 +19,7 @@ export default function WeekClient({ year, month, day }: PropsType) {
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
-  const [defaultStartTime, setDefaultStartTime] = useState<
-    string | undefined
-  >();
+  const [defaultStartTime, setDefaultStartTime] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const yearNumber = Number(year);

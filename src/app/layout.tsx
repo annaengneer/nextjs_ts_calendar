@@ -1,6 +1,6 @@
 import { CalendarProvider } from './_context/CalendarContext';
 import './globals.css';
-import { getEventsByMonth } from '@/lib/events';
+import { getEventsByMonth } from '@/lib/repositories/event/event.repository';
 
 export default async function RootLayout({
   children,

@@ -1,9 +1,14 @@
 import { prisma } from '@/lib/prisma';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
 
-export async function getEventsByDate(date: string): Promise<CalendarEvent[]> {
-  const start = new Date(`${date}T00:00:00`);
-  const end = new Date(`${date}T24:00:00`);
+export async function getEventsByDate(
+  year: number,
+  month: number,
+  day: number
+): Promise<CalendarEvent[]> {
+  const start = new Date(year, month - 1, day);
+  const end = new Date(year, month - 1, day + 1);
+
   return prisma.event.findMany({
     where: {
       startTime: {

@@ -1,5 +1,5 @@
 import WeekClient from './WeekClient';
-import { getEventsByWeek } from '@/lib/events';
+import { getEventsByWeek } from '@/lib/repositories/event/event.repository';
 import { CalendarProvider } from '@/app/_context/CalendarContext';
 
 type PropsType = {

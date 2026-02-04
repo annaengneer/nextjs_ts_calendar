@@ -13,20 +13,17 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 type PropsType = {
-  year: string;
-  month: string;
+  year: number;
+  month: number;
 };
 
 export default function MonthClient({ year, month }: PropsType) {
   const { events } = useCalendar();
-  console.log('events:', events);
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
 
-  const yearNumber = Number(year);
-  const monthNumber = Number(month);
-  const dates = getMonthCalendarDates(yearNumber, monthNumber);
+  const dates = getMonthCalendarDates(year, month);
   const eventDateKey = (event: CalendarEvent) =>
     formatDateKey(
       event.startTime.getFullYear(),
@@ -54,7 +51,7 @@ export default function MonthClient({ year, month }: PropsType) {
             );
 
             const isToday = isTodayDate(date);
-            const isCurrent = isCurrentMonth(date, yearNumber, monthNumber);
+            const isCurrent = isCurrentMonth(date, year, month);
 
             const dayEvents = events.filter(
               (event) => eventDateKey(event) === dateKey && isCurrent
@@ -74,7 +71,7 @@ export default function MonthClient({ year, month }: PropsType) {
                 }}
               >
                 <Link
-                  href={`/day/${yearNumber}/${monthNumber}/${date.getDate()}`}
+                  href={`/day/${year}/${month}/${date.getDate()}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div

@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { title, date, startTime, endTime } = await request.json();
+    const { title, startTime, endTime } = await request.json();
 
-    if (!title || !date || !startTime || !endTime) {
+    if (!title || !startTime || !endTime) {
       return NextResponse.json(
         { message: 'Missing required fields' },
         { status: 400 }
@@ -15,9 +15,8 @@ export async function POST(request: Request) {
     const event = await prisma.event.create({
       data: {
         title,
-
-        startTime,
-        endTime,
+        startTime: new Date(startTime),
+        endTime: new Date(endTime),
       },
     });
 
