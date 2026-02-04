@@ -63,7 +63,6 @@ export default function DayClient({ year, month, day }: PropsType) {
 
       <div className="flex-1 overflow-y-auto">
         <div className="relative flex">
-          {/* 左：時間 */}
           <div className="sticky top-0 left-0 z-20 w-15 bg-white">
             {hours.map((hour) => (
               <div
