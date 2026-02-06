@@ -1,6 +1,6 @@
 import { CalendarProvider } from '@/app/_context/CalendarContext';
 import MonthClient from './MonthClient';
-import { getEventsByMonth } from '@/lib/repositories/event/event.repository';
+import { getEventsByMonth } from '@/lib/repositories/event';
 
 type PropsType = {
   params: Promise<{
@@ -12,14 +12,11 @@ type PropsType = {
 export default async function MonthPage({ params }: PropsType) {
   const { year, month } = await params;
 
-  const yearNumber = Number(year);
-  const monthNumber = Number(month);
-
   const events = await getEventsByMonth(Number(year), Number(month));
 
   return (
     <CalendarProvider initialEvents={events}>
-      <MonthClient year={yearNumber} month={monthNumber} />
+      <MonthClient year={+year} month={+month} />
     </CalendarProvider>
   );
 }

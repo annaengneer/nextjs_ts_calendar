@@ -1,12 +1,14 @@
 'use client';
 
-import DayEvents from '@/app/(calendar)/day/_components/DayEvents';
+import DayEventModal from '@/app/(calendar)/day/_components/DayEventModal';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
 import { useState } from 'react';
 import { useCalendar } from '@/app/_context/CalendarContext';
-import { formatDateKey } from '@/lib/date';
-import { isToday as isTodayDate } from 'date-fns';
+import { HOURS, MINUTES_PER_HOUR } from '@/lib/calendar/constants';
 import { buildDayEventLayout } from '@/lib/calendar/dayLayout';
+import { formatDateKey, formatTime } from '@/lib/date';
+import { isToday as isTodayDate } from 'date-fns';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type PropsType = {
   year: number;
@@ -14,34 +16,30 @@ type PropsType = {
   day: number;
 };
 
-const hours = Array.from({ length: 24 }, (_, i) => i);
 const HOUR_HEIGHT = 48;
-const MINUTE_HEIGHT = HOUR_HEIGHT / 60;
+const MINUTE_HEIGHT = HOUR_HEIGHT / MINUTES_PER_HOUR;
 
 export default function DayClient({ year, month, day }: PropsType) {
   const { events } = useCalendar();
-  const dayEvents = events.filter((event) => {
-    return (
-      event.startTime.getFullYear() === year &&
-      event.startTime.getMonth() + 1 === month &&
-      event.startTime.getDate() === day
-    );
-  });
-  const dayEventLayouts = buildDayEventLayout(dayEvents);
+  const router = useRouter();
+  const dayEventLayouts = buildDayEventLayout(events);
 
   const date = formatDateKey(year, month, day);
   const dateObj = new Date(year, month - 1, day);
   const dayOfWeek = dateObj.getDay();
   const isToday = isTodayDate(dateObj);
 
-  const [creating, setCreating] = useState(false);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
   const [defaultStartTime, setDefaultStartTime] = useState<string | null>(null);
   const handleClose = () => {
-    setCreating(false);
     setEditingEvent(null);
     setDefaultStartTime(null);
+
+    router.replace(`/day/${year}/${month}/${day}`);
   };
+
+  const searchParams = useSearchParams();
+  const isCreateFromUrl = searchParams.get('create') === '1';
 
   return (
     <div className="flex h-full flex-col">
@@ -64,7 +62,7 @@ export default function DayClient({ year, month, day }: PropsType) {
       <div className="flex-1 overflow-y-auto">
         <div className="relative flex">
           <div className="sticky top-0 left-0 z-20 w-15 bg-white">
-            {hours.map((hour) => (
+            {HOURS.map((hour) => (
               <div
                 key={hour}
                 className="h-12 flex items-start justify-end pr-2 text-xs text-gray-500"
@@ -85,8 +83,9 @@ export default function DayClient({ year, month, day }: PropsType) {
                 const hour = Math.floor(minutes / 60);
 
                 setDefaultStartTime(`${String(hour).padStart(2, '0')}:00`);
-                setCreating(true);
                 setEditingEvent(null);
+
+                router.push(`/day/${year}/${month}/${day}?create=1`);
               }}
             />
 
@@ -121,15 +120,9 @@ export default function DayClient({ year, month, day }: PropsType) {
                 >
                   <div className="font-semibold">{event.title}</div>
                   <div className="text-[11px] opacity-90">
-                    {event.startTime.toLocaleTimeString('ja-JP', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
+                    {formatTime(event.startTime)}
                     {' - '}
-                    {event.endTime.toLocaleTimeString('ja-JP', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
+                    {formatTime(event.endTime)}
                   </div>
                 </div>
               );
@@ -137,8 +130,8 @@ export default function DayClient({ year, month, day }: PropsType) {
           </div>
         </div>
       </div>
-      {(creating || editingEvent) && (
-        <DayEvents
+      {(isCreateFromUrl || editingEvent) && (
+        <DayEventModal
           date={date}
           editingEvent={editingEvent}
           defaultStartTime={defaultStartTime}

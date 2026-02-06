@@ -1,6 +1,6 @@
-import WeekClient from './WeekClient';
-import { getEventsByWeek } from '@/lib/repositories/event/event.repository';
 import { CalendarProvider } from '@/app/_context/CalendarContext';
+import WeekClient from './WeekClient';
+import { getEventsByWeek } from '@/lib/repositories/event';
 
 type PropsType = {
   params: Promise<{
@@ -13,15 +13,15 @@ type PropsType = {
 export default async function WeekPage({ params }: PropsType) {
   const { year, month, day } = await params;
 
-  const events = await getEventsByWeek(
-    Number(year),
-    Number(month),
-    Number(day)
-  );
+  const y = Number(year);
+  const m = Number(month);
+  const d = Number(day);
+
+  const events = await getEventsByWeek(y, m, d);
 
   return (
     <CalendarProvider initialEvents={events}>
-      <WeekClient year={year} month={month} day={day} />
+      <WeekClient year={y} month={m} day={d} />
     </CalendarProvider>
   );
 }

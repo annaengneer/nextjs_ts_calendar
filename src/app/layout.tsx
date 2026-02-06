@@ -1,19 +1,16 @@
-import { CalendarProvider } from './_context/CalendarContext';
+import { CalendarProvider } from '@/app/_context/CalendarContext';
 import './globals.css';
-import { getEventsByMonth } from '@/lib/repositories/event/event.repository';
+import type { ReactNode } from 'react';
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const now = new Date();
-  const events = await getEventsByMonth(now.getFullYear(), now.getMonth() + 1);
+type Props = {
+  children: ReactNode;
+};
 
+export default function RootLayout({ children }: Props) {
   return (
     <html lang="ja">
       <body>
-        <CalendarProvider initialEvents={events}>{children}</CalendarProvider>
+        <CalendarProvider initialEvents={[]}>{children}</CalendarProvider>
       </body>
     </html>
   );

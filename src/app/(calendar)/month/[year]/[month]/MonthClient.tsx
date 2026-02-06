@@ -1,6 +1,6 @@
 'use client';
+import DayEventModal from '@/app/(calendar)/day/_components/DayEventModal';
 import { useCalendar } from '@/app/_context/CalendarContext';
-import DayEvents from '@/app/(calendar)/day/_components/DayEvents';
 import {
   getMonthCalendarDates,
   isCurrentMonth,
@@ -10,7 +10,8 @@ import { formatDateKey } from '@/lib/date';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
 
 import Link from 'next/link';
-import { useState } from 'react';
+
+import { useMemo, useState } from 'react';
 
 type PropsType = {
   year: number;
@@ -18,18 +19,43 @@ type PropsType = {
 };
 
 export default function MonthClient({ year, month }: PropsType) {
-  const { events } = useCalendar();
-
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const { events, createDate, openCreate, closeCreate } = useCalendar();
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
-
   const dates = getMonthCalendarDates(year, month);
-  const eventDateKey = (event: CalendarEvent) =>
-    formatDateKey(
-      event.startTime.getFullYear(),
-      event.startTime.getMonth() + 1,
-      event.startTime.getDate()
-    );
+
+  const eventsByDate = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+
+    events.forEach((event) => {
+      const key = formatDateKey(
+        event.startTime.getFullYear(),
+        event.startTime.getMonth() + 1,
+        event.startTime.getDate()
+      );
+
+      const list = map.get(key) ?? [];
+      list.push(event);
+      map.set(key, list);
+    });
+
+    return map;
+  }, [events]);
+
+  const isCurrentMonthMap = useMemo(() => {
+    const map = new Map<string, boolean>();
+
+    dates.forEach((date) => {
+      const key = formatDateKey(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate()
+      );
+      map.set(key, isCurrentMonth(date, year, month));
+    });
+
+    return map;
+  }, [dates, year, month]);
+
   return (
     <>
       <div className="p-4">
@@ -51,11 +77,9 @@ export default function MonthClient({ year, month }: PropsType) {
             );
 
             const isToday = isTodayDate(date);
-            const isCurrent = isCurrentMonth(date, year, month);
+            const isCurrent = isCurrentMonthMap.get(dateKey) ?? false;
 
-            const dayEvents = events.filter(
-              (event) => eventDateKey(event) === dateKey && isCurrent
-            );
+            const dayEvents = isCurrent ? eventsByDate.get(dateKey) ?? [] : [];
 
             return (
               <div
@@ -66,8 +90,9 @@ export default function MonthClient({ year, month }: PropsType) {
                 hover:bg-blue-50
               `}
                 onClick={() => {
-                  setSelectedDate(dateKey);
-                  setEditingEvent(null);
+                  if (!isCurrent) return;
+
+                  openCreate(dateKey);
                 }}
               >
                 <Link
@@ -91,7 +116,6 @@ export default function MonthClient({ year, month }: PropsType) {
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditingEvent(event);
-                      setSelectedDate(eventDateKey(event));
                     }}
                   >
                     {event.title}
@@ -102,15 +126,20 @@ export default function MonthClient({ year, month }: PropsType) {
           })}
         </div>
       </div>
-      {selectedDate && (
-        <DayEvents
-          key={editingEvent ? editingEvent.id : 'new'}
-          date={selectedDate}
+      {createDate && !editingEvent && (
+        <DayEventModal date={createDate} onClose={closeCreate} allowDateEdit />
+      )}
+
+      {editingEvent && (
+        <DayEventModal
+          date={formatDateKey(
+            editingEvent.startTime.getFullYear(),
+            editingEvent.startTime.getMonth() + 1,
+            editingEvent.startTime.getDate()
+          )}
           editingEvent={editingEvent}
-          onClose={() => {
-            setSelectedDate(null);
-            setEditingEvent(null);
-          }}
+          onClose={() => setEditingEvent(null)}
+          allowDateEdit
         />
       )}
     </>

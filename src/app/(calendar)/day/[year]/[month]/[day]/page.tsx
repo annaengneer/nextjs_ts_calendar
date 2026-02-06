@@ -1,5 +1,5 @@
 import DayClient from './DayClient';
-import { getEventsByDate } from '@/lib/repositories/event/event.repository';
+import { getEventsByDate } from '@/lib/repositories/event';
 import { CalendarProvider } from '@/app/_context/CalendarContext';
 
 type Props = {

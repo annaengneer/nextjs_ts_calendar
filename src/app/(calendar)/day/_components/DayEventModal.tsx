@@ -1,97 +1,74 @@
 'use client';
 
 import { useCalendar } from '@/app/_context/CalendarContext';
-import { formatDateKey } from '@/lib/date';
+import { addHoursToTime, buildDateTimeRange, formatTime } from '@/lib/date';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
-import { useRouter } from 'next/navigation';
-
 import { useState } from 'react';
+
 type Props = {
   date: string;
   editingEvent?: CalendarEvent | null;
   defaultStartTime?: string | null;
+  forceCreate?: boolean;
   allowDateEdit?: boolean;
-  onClose?: () => void;
+  onClose: () => void;
 };
 
-const toTime = (date: Date) => {
-  return date.toLocaleTimeString('ja-JP', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-};
-
-export default function DayEvents({
+export default function DayEventModal({
   date,
   editingEvent,
   defaultStartTime,
+  forceCreate = false,
   allowDateEdit = false,
   onClose,
 }: Props) {
-  const router = useRouter();
   const { addEvent, updateEvent, deleteEvent } = useCalendar();
 
   const [title, setTitle] = useState(editingEvent?.title ?? '');
   const [eventDate, setEventDate] = useState(
     editingEvent?.startTime
-      ? formatDateKey(
-          editingEvent.startTime.getFullYear(),
-          editingEvent.startTime.getMonth() + 1,
-          editingEvent.startTime.getDate()
-        )
+      ? editingEvent.startTime.toLocaleDateString('sv-SE')
       : date ?? new Date().toLocaleDateString('sv-SE')
   );
   const [startTime, setStartTime] = useState(
-    editingEvent ? toTime(editingEvent.startTime) : defaultStartTime ?? '09:00'
+    editingEvent
+      ? formatTime(editingEvent.startTime)
+      : defaultStartTime ?? '09:00'
   );
+
   const [endTime, setEndTime] = useState(
     editingEvent
-      ? toTime(editingEvent.endTime)
+      ? formatTime(editingEvent.endTime)
       : defaultStartTime
-      ? `${String(Number(defaultStartTime.slice(0, 2)) + 1).padStart(
-          2,
-          '0'
-        )}:00`
+      ? addHoursToTime(defaultStartTime, 1)
       : '10:00'
   );
 
   const saveHandler = async () => {
     if (!title.trim()) return;
 
-    const [y, m, d] = eventDate.split('-').map(Number);
-    const [sh, sm] = startTime.split(':').map(Number);
-    const [eh, em] = endTime.split(':').map(Number);
+    const { start, end } = buildDateTimeRange(eventDate, startTime, endTime);
+    if (end <= start) return;
 
-    const startISO = new Date(y, m - 1, d, sh, sm, 0, 0);
-    const endISO = new Date(y, m - 1, d, eh, em, 0, 0);
-    if (endTime === '00:00' && startTime !== '00:00') {
-      endISO.setDate(endISO.getDate() + 1);
-    }
+    const isCreate = forceCreate || !editingEvent;
 
-    if (endISO <= startISO) return;
-
-    if (editingEvent) {
+    if (!isCreate && editingEvent) {
       await updateEvent({
         ...editingEvent,
         title,
-        startTime: startISO,
-        endTime: endISO,
+        startTime: start,
+        endTime: end,
       });
     } else {
-      const newEvent = {
+      await addEvent({
         id: crypto.randomUUID(),
         title,
-        date: eventDate,
-        startTime: startISO,
-        endTime: endISO,
-      };
-
-      await addEvent(newEvent);
+        startTime: start,
+        endTime: end,
+      });
     }
 
-    router.refresh();
-    onClose?.();
+    onClose();
   };
 
   return (
@@ -143,8 +120,8 @@ export default function DayEvents({
             <button
               onClick={async () => {
                 await deleteEvent(editingEvent.id);
-                router.refresh();
-                onClose?.();
+
+                onClose();
               }}
               className="mr-auto
                 rounded-lg
