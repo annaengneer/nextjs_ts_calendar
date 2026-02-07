@@ -1,9 +1,7 @@
 'use client';
 
-import { useCalendar } from '../_context/CalendarContext';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import DayEventModal from '@/app/(calendar)/day/_components/DayEventModal';
 
 export default function CalendarLayout({
   children,
@@ -14,8 +12,6 @@ export default function CalendarLayout({
 }
 
 function CalendarShell({ children }: { children: React.ReactNode }) {
-  const { createDate, closeCreate } = useCalendar();
-
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-gray-100">
       <Header />
@@ -33,10 +29,6 @@ function CalendarShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
-
-      {createDate && (
-        <DayEventModal date={createDate} onClose={closeCreate} allowDateEdit />
-      )}
     </div>
   );
 }

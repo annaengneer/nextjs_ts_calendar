@@ -5,14 +5,12 @@ import { buildDateTimeRange } from '@/lib/date';
 
 type CreateEventInput = {
   title: string;
-  date: string;
-  startTime: string;
-  endTime: string;
+  startTime: Date;
+  endTime: Date;
 };
 
 export async function createEvent(input: CreateEventInput) {
-  const { start, end } = buildDateTimeRange(
-    input.date,
+  const { startTime, endTime } = buildDateTimeRange(
     input.startTime,
     input.endTime
   );
@@ -20,8 +18,8 @@ export async function createEvent(input: CreateEventInput) {
   return prisma.event.create({
     data: {
       title: input.title,
-      startTime: start,
-      endTime: end,
+      startTime,
+      endTime,
     },
   });
 }
@@ -29,12 +27,10 @@ export async function createEvent(input: CreateEventInput) {
 export async function updateEvent(input: {
   id: string;
   title: string;
-  date: string;
-  startTime: string;
-  endTime: string;
+  startTime: Date;
+  endTime: Date;
 }) {
-  const { start, end } = buildDateTimeRange(
-    input.date,
+  const { startTime, endTime } = buildDateTimeRange(
     input.startTime,
     input.endTime
   );
@@ -43,8 +39,8 @@ export async function updateEvent(input: {
     where: { id: input.id },
     data: {
       title: input.title,
-      startTime: start,
-      endTime: end,
+      startTime,
+      endTime,
     },
   });
 }

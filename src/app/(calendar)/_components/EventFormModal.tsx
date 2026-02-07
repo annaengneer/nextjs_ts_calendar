@@ -7,38 +7,35 @@ import { useState } from 'react';
 
 type Props = {
   date: string;
-  editingEvent?: CalendarEvent | null;
   defaultStartTime?: string | null;
-  forceCreate?: boolean;
   allowDateEdit?: boolean;
+  mode: 'create' | 'edit';
+  event?: CalendarEvent;
   onClose: () => void;
 };
 
-export default function DayEventModal({
+export default function EventFormModal({
   date,
-  editingEvent,
+  mode,
+  event,
   defaultStartTime,
-  forceCreate = false,
   allowDateEdit = false,
   onClose,
 }: Props) {
   const { addEvent, updateEvent, deleteEvent } = useCalendar();
 
-  const [title, setTitle] = useState(editingEvent?.title ?? '');
+  const [title, setTitle] = useState(event?.title ?? '');
   const [eventDate, setEventDate] = useState(
-    editingEvent?.startTime
-      ? editingEvent.startTime.toLocaleDateString('sv-SE')
-      : date ?? new Date().toLocaleDateString('sv-SE')
+    event ? event.startTime.toLocaleDateString('sv-SE') : date
   );
+
   const [startTime, setStartTime] = useState(
-    editingEvent
-      ? formatTime(editingEvent.startTime)
-      : defaultStartTime ?? '09:00'
+    event ? formatTime(event.startTime) : defaultStartTime ?? '09:00'
   );
 
   const [endTime, setEndTime] = useState(
-    editingEvent
-      ? formatTime(editingEvent.endTime)
+    event
+      ? formatTime(event.endTime)
       : defaultStartTime
       ? addHoursToTime(defaultStartTime, 1)
       : '10:00'
@@ -47,24 +44,29 @@ export default function DayEventModal({
   const saveHandler = async () => {
     if (!title.trim()) return;
 
-    const { start, end } = buildDateTimeRange(eventDate, startTime, endTime);
-    if (end <= start) return;
+    const start = new Date(`${eventDate}T${startTime}`);
+    const end = new Date(`${eventDate}T${endTime}`);
 
-    const isCreate = forceCreate || !editingEvent;
+    const { startTime: fixedStart, endTime: fixedEnd } = buildDateTimeRange(
+      start,
+      end
+    );
 
-    if (!isCreate && editingEvent) {
+    if (fixedEnd <= fixedStart) return;
+
+    if (mode === 'edit' && event) {
       await updateEvent({
-        ...editingEvent,
+        id: event.id,
         title,
-        startTime: start,
-        endTime: end,
+        startTime: fixedStart,
+        endTime: fixedEnd,
       });
     } else {
       await addEvent({
         id: crypto.randomUUID(),
         title,
-        startTime: start,
-        endTime: end,
+        startTime: fixedStart,
+        endTime: fixedEnd,
       });
     }
 
@@ -81,7 +83,7 @@ export default function DayEventModal({
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-lg font-semibold text-gray-800">
-          {editingEvent ? '予定を編集' : '予定を追加'}
+          {mode === 'edit' ? '予定を編集' : '予定を追加'}
         </h2>
 
         <input
@@ -116,11 +118,10 @@ export default function DayEventModal({
           />
         </div>
         <div className="flex items-center justify-between">
-          {editingEvent && (
+          {mode === 'edit' && event && (
             <button
               onClick={async () => {
-                await deleteEvent(editingEvent.id);
-
+                await deleteEvent(event.id);
                 onClose();
               }}
               className="mr-auto

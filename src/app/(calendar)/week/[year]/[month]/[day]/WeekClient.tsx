@@ -7,7 +7,7 @@ import { CalendarEvent } from '@/lib/types/calendarEvent';
 import { HOURS, MINUTES_PER_HOUR } from '@/lib/calendar/constants';
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
-import DayEventModal from '@/app/(calendar)/day/_components/DayEventModal';
+import EventFormModal from '@/app/(calendar)/_components/EventFormModal';
 
 type PropsType = {
   year: number;
@@ -16,8 +16,13 @@ type PropsType = {
 };
 
 export default function WeekClient({ year, month, day }: PropsType) {
-  const { events, createDate, openCreate, closeCreate } = useCalendar();
+  const { events } = useCalendar();
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+
+  const [createDateTime, setCreateDateTime] = useState<{
+    date: string;
+    startTime: string;
+  } | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -98,13 +103,16 @@ export default function WeekClient({ year, month, day }: PropsType) {
                       className="border-l border-t border-gray-200 hover:bg-blue-50"
                       style={{ height: HOUR_HEIGHT }}
                       onClick={() => {
-                        openCreate(
-                          `${formatDateKey(
-                            date.getFullYear(),
-                            date.getMonth() + 1,
-                            date.getDate()
-                          )} ${String(hour).padStart(2, '0')}:00`
+                        const dateKey = formatDateKey(
+                          date.getFullYear(),
+                          date.getMonth() + 1,
+                          date.getDate()
                         );
+
+                        setCreateDateTime({
+                          date: dateKey,
+                          startTime: `${String(hour).padStart(2, '0')}:00`,
+                        });
 
                         scrollRef.current?.scrollTo({
                           top: hour * HOUR_HEIGHT,
@@ -175,12 +183,27 @@ export default function WeekClient({ year, month, day }: PropsType) {
         </div>
       </div>
 
-      {createDate && !editingEvent && (
-        <DayEventModal
-          date={createDate.split(' ')[0]}
-          defaultStartTime={createDate.split(' ')[1]}
-          onClose={closeCreate}
+      {createDateTime && (
+        <EventFormModal
+          date={createDateTime.date}
+          mode="create"
+          defaultStartTime={createDateTime.startTime}
           allowDateEdit
+          onClose={() => setCreateDateTime(null)}
+        />
+      )}
+
+      {editingEvent && (
+        <EventFormModal
+          date={formatDateKey(
+            editingEvent.startTime.getFullYear(),
+            editingEvent.startTime.getMonth() + 1,
+            editingEvent.startTime.getDate()
+          )}
+          mode="edit"
+          event={editingEvent}
+          allowDateEdit
+          onClose={() => setEditingEvent(null)}
         />
       )}
     </>

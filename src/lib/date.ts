@@ -1,4 +1,4 @@
-import { addDays, format, isBefore, parse } from 'date-fns';
+import { format } from 'date-fns';
 
 export const formatDateKey = (year: number, month: number, day: number) => {
   return new Date(year, month - 1, day).toLocaleDateString('sv-SE');
@@ -16,18 +16,16 @@ export const addHoursToTime = (time: string, hoursToAdd: number): string => {
   return format(date, 'HH:mm');
 };
 
-export const buildDateTimeRange = (
-  date: string,
-  startTime: string,
-  endTime: string
-) => {
-  const start = parse(`${date} ${startTime}`, 'yyyy-MM-dd HH:mm', new Date());
+export const buildDateTimeRange = (startTime: Date, endTime: Date) => {
+  let end = endTime;
 
-  let end = parse(`${date} ${endTime}`, 'yyyy-MM-dd HH:mm', new Date());
-
-  if (endTime === '00:00' && isBefore(end, start)) {
-    end = addDays(end, 1);
+  if (end.getHours() === 0 && end.getMinutes() === 0 && end <= startTime) {
+    end = new Date(end);
+    end.setDate(end.getDate() + 1);
   }
 
-  return { start, end };
+  return {
+    startTime,
+    endTime: end,
+  };
 };

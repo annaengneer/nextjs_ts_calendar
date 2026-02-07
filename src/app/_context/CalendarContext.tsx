@@ -7,16 +7,12 @@ import {
   updateEvent as updateEventAction,
   deleteEvent as deleteEventAction,
 } from '@/app/actions/event';
-import { formatTime } from '@/lib/date';
 
 type CalendarContextType = {
   events: CalendarEvent[];
   addEvent: (event: CalendarEvent) => Promise<void>;
   updateEvent: (event: CalendarEvent) => Promise<void>;
   deleteEvent: (id: string) => Promise<void>;
-  createDate: string | null;
-  openCreate: (date: string) => void;
-  closeCreate: () => void;
 };
 
 const CalendarContext = createContext<CalendarContextType | null>(null);
@@ -29,43 +25,28 @@ export const CalendarProvider = ({
   initialEvents: CalendarEvent[];
 }) => {
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
-  const [createDate, setCreateDate] = useState<string | null>(null);
-
-  const openCreate = (date: string) => {
-    setCreateDate(date);
-  };
-
-  const closeCreate = () => {
-    setCreateDate(null);
-  };
 
   const addEvent = async (event: CalendarEvent): Promise<void> => {
     const saved = await createEventAction({
       title: event.title,
-      date: event.startTime.toLocaleDateString('sv-SE'),
-      startTime: formatTime(event.startTime),
-      endTime: formatTime(event.endTime),
+      startTime: event.startTime,
+      endTime: event.endTime,
     });
+    const newEvent: CalendarEvent = {
+      ...saved,
+      startTime: new Date(saved.startTime),
+      endTime: new Date(saved.endTime),
+    };
 
-    setEvents((prev) => {
-      const newEvent: CalendarEvent = {
-        id: saved.id,
-        title: saved.title,
-        startTime: new Date(saved.startTime),
-        endTime: new Date(saved.endTime),
-      };
-
-      return [...prev, newEvent];
-    });
+    setEvents((prev) => [...prev, newEvent]);
   };
 
   const updateEvent = async (event: CalendarEvent): Promise<void> => {
     const saved = await updateEventAction({
       id: event.id,
       title: event.title,
-      date: event.startTime.toLocaleDateString('sv-SE'),
-      startTime: formatTime(event.startTime),
-      endTime: formatTime(event.endTime),
+      startTime: event.startTime,
+      endTime: event.endTime,
     });
 
     setEvents((prev) =>
@@ -94,9 +75,6 @@ export const CalendarProvider = ({
         addEvent,
         updateEvent,
         deleteEvent,
-        createDate,
-        openCreate,
-        closeCreate,
       }}
     >
       {children}

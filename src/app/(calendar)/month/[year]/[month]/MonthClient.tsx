@@ -1,5 +1,5 @@
 'use client';
-import DayEventModal from '@/app/(calendar)/day/_components/DayEventModal';
+import EventFormModal from '@/app/(calendar)/_components/EventFormModal';
 import { useCalendar } from '@/app/_context/CalendarContext';
 import {
   getMonthCalendarDates,
@@ -19,7 +19,8 @@ type PropsType = {
 };
 
 export default function MonthClient({ year, month }: PropsType) {
-  const { events, createDate, openCreate, closeCreate } = useCalendar();
+  const { events } = useCalendar();
+  const [createDate, setCreateDate] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
   const dates = getMonthCalendarDates(year, month);
 
@@ -91,8 +92,8 @@ export default function MonthClient({ year, month }: PropsType) {
               `}
                 onClick={() => {
                   if (!isCurrent) return;
-
-                  openCreate(dateKey);
+                  setEditingEvent(null);
+                  setCreateDate(dateKey);
                 }}
               >
                 <Link
@@ -115,6 +116,7 @@ export default function MonthClient({ year, month }: PropsType) {
                     className="truncate rounded bg-blue-100 px-1 text-xs"
                     onClick={(e) => {
                       e.stopPropagation();
+                      setCreateDate(null);
                       setEditingEvent(event);
                     }}
                   >
@@ -127,17 +129,23 @@ export default function MonthClient({ year, month }: PropsType) {
         </div>
       </div>
       {createDate && !editingEvent && (
-        <DayEventModal date={createDate} onClose={closeCreate} allowDateEdit />
+        <EventFormModal
+          date={createDate}
+          mode="create"
+          allowDateEdit
+          onClose={() => setCreateDate(null)}
+        />
       )}
 
       {editingEvent && (
-        <DayEventModal
+        <EventFormModal
           date={formatDateKey(
             editingEvent.startTime.getFullYear(),
             editingEvent.startTime.getMonth() + 1,
             editingEvent.startTime.getDate()
           )}
-          editingEvent={editingEvent}
+          mode="edit"
+          event={editingEvent}
           onClose={() => setEditingEvent(null)}
           allowDateEdit
         />

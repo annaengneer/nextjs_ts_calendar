@@ -1,6 +1,6 @@
 'use client';
 
-import DayEventModal from '@/app/(calendar)/day/_components/DayEventModal';
+import EventFormModal from '@/app/(calendar)/_components/EventFormModal';
 import { CalendarEvent } from '@/lib/types/calendarEvent';
 import { useState } from 'react';
 import { useCalendar } from '@/app/_context/CalendarContext';
@@ -131,9 +131,10 @@ export default function DayClient({ year, month, day }: PropsType) {
         </div>
       </div>
       {(isCreateFromUrl || editingEvent) && (
-        <DayEventModal
+        <EventFormModal
           date={date}
-          editingEvent={editingEvent}
+          mode={editingEvent ? 'edit' : 'create'}
+          event={editingEvent ?? undefined}
           defaultStartTime={defaultStartTime}
           allowDateEdit
           onClose={handleClose}
