@@ -6,13 +6,13 @@ URLベースのページ遷移設計を採用し、
 月・週・日単位での表示切り替え、
 予定のCRUD機能、データ永続化まで実装しています。
 
----
+
 
 ## 🌐 デモ環境
 
 https://nextjs-ts-calendar-sable.vercel.app/
 
----
+
 
 ## 🛠 使用技術
 
@@ -23,7 +23,7 @@ https://nextjs-ts-calendar-sable.vercel.app/
 - PostgreSQL（Neon）
 - Vercel
 
----
+
 
 ## 💻 主な機能
 
@@ -34,7 +34,7 @@ https://nextjs-ts-calendar-sable.vercel.app/
 - 今日の日付をハイライト表示
 - 月表示 / 週表示 / 日表示の切り替え
 
----
+
 
 ### ■ URLベース設計
 
@@ -61,14 +61,13 @@ date-fns を用いて日付計算を行っています。
 - 予定削除
 - 月・週・日表示すべてにリアルタイム反映
 
----
+
 
 ### ■ データ永続化
 
 Prisma を用いて PostgreSQL に保存。
 リロード後も予定が保持されます。
 
----
 
 ## 💡 実装上の工夫
 
