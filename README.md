@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📅 カレンダーWebアプリ（Next.js / TypeScript）
 
-## Getting Started
+Google Calendar を参考に開発したカレンダーWebアプリケーションです。
 
-First, run the development server:
+URLベースのページ遷移設計を採用し、
+月・週・日単位での表示切り替え、
+予定のCRUD機能、データ永続化まで実装しています。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌐 デモ環境
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+https://nextjs-ts-calendar-sable.vercel.app/
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🛠 使用技術
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js（App Router）
+- TypeScript
+- date-fns
+- Prisma
+- PostgreSQL（Neon）
+- Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 💻 主な機能
 
-## Deploy on Vercel
+### ■ カレンダー表示
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- デフォルトで現在月を表示
+- 前月 / 翌月の切り替え
+- 今日の日付をハイライト表示
+- 月表示 / 週表示 / 日表示の切り替え
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+### ■ URLベース設計
+
+動的ルーティングによるページ遷移型設計。
+
+- 月表示  
+  `/month/[year]/[month]`
+
+- 週表示  
+  `/week/[year]/[month]/[day]`
+
+- 日表示  
+  `/day/[year]/[month]/[day]`
+
+URLパラメータを単一の状態管理ソースとし、
+date-fns を用いて日付計算を行っています。
+
+---
+
+### ■ 予定管理機能（CRUD）
+
+- 予定作成（モーダル）
+- 予定編集（タイトル変更）
+- 予定削除
+- 月・週・日表示すべてにリアルタイム反映
+
+---
+
+### ■ データ永続化
+
+Prisma を用いて PostgreSQL に保存。
+リロード後も予定が保持されます。
+
+---
+
+## 💡 実装上の工夫
+
+- URLを状態管理の中心とした設計
+- date-fns による安全で明確な日付計算
+- App Router を活用した責務分離設計
+- コンポーネント分割による再利用性向上
+- シンプルかつ拡張可能なイベントモデル設計
